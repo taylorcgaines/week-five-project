@@ -7,6 +7,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const mustache = require('mustache-express')
 const fs = require('fs')
+const expressValidator = require('express-validator');
+const validator = require('validator');
 const words = fs.readFileSync("/usr/share/dict/words", "utf-8").toLowerCase().split("\n");
 const word = getRandomWord(words);
 
@@ -29,16 +31,16 @@ function getRandomWord(array){
 function toBlanks(chosenWord){
   var charNum = chosenWord.length;
   for (i=0; i<chosenWord.length; i++){
-  blankArray.push("- ");
+  blankArray.push("_ ");
   }
 }
-
 
 app.engine('mustache', mustache() )
 app.set('view engine', 'mustache');
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(expressValidator());
 
 app.get('/', function(req,res){
   res.render("home",{
@@ -51,7 +53,48 @@ app.get('/', function(req,res){
 })
 
 app.post('/guess', function(req,res){
-  let guessChar = req.body.guessChar;
-  guessedArray.push(guessChar)
-  res.redirect('/')
+  // if ((blankArray.indexOf("_ "))!==(-1)){ //if there isn't a "_ " in the blanks
+  //   if (guessLeft > 0){
+  //
+  //   }
+  // }
+  const guessChar = req.body.guessChar;
+  guessedArray.push(guessChar+" ")
+  guessLeft--
+
+  req.checkBody("guessChar", "You didn't enter anything!").notEmpty();
+  req.checkBody("guessChar", "You didn't enter a letter!").isAlpha();
+  req.checkBody("guessChar", "Try again! Either too few or too many!").len(1,1);
+
+  var errors = req.validationErrors();
+
+  if (errors){
+    res.render('home', {
+      pageTitle: "Home!",
+      guessLeft: guessLeft,
+      guessedArray: guessedArray,
+      blankArray: blankArray,
+      word: word,
+      errors: errors
+    })
+  } else {
+      if (word.indexOf(guessChar)!==(-1)){
+        if (word.indexOf(guessChar)!==(-1)){
+          tempPosition = word.indexOf(guessChar)
+          blankArray[tempPosition] = guessChar
+          // while (word.indexOf(guessChar,(tempPosition+1))!==(-1)){
+          //   tempPosition = word.indexOf(guessChar)
+          //   blankArray[tempPosition] = guessChar
+          // }
+        }
+      }
+
+    res.render("home", {
+      pageTitle: "Home!",
+      guessLeft: guessLeft,
+      guessedArray: guessedArray,
+      blankArray: blankArray,
+      word: word
+    })
+}
 })

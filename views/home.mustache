@@ -3,24 +3,30 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/css/master.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{pageTitle}}</title>
   </head>
   <body>
-    <h1>Hubbawubbs Word Game</h1>
-    <div class="blanks">
-      <div style="font-size: 2rem">{{#blankArray}}{{.}}{{/blankArray}}</div>
-      {{word}}
-    </div>
-    <form class="guessForm" action="/guess" method="post">
-      <label for="guess">Guess a Letter! Any Letter!</label>
-      <input type="text" name="guessChar" value=""><button type="submit" name="submit">Guess!</button>
-    </form>
+    <main>
+      <h1>Hubbawubbs Word Game</h1>
+      <div class="blanks">
+        <div style="font-size: 2rem">{{#blankArray}}{{.}}{{/blankArray}}</div>
+        {{word}}
+      </div>
+      <form class="guessForm" action="/guess" method="post">
+        <label for="guess">Guess a Letter! Any Letter!</label>
+        <input type="text" name="guessChar" value=""><button type="submit" name="submit">Guess!</button>
+      </form>
+      <div class="errors">
+        Errors: {{#errors}}{{msg}}{{/errors}}{{^errors}}Good Job! That was a valid input!{{/errors}}
+      </div>
+      <div class="guessed">
+        You Guessed: {{#guessedArray}}{{.}}{{/guessedArray}}
+      </div>
+      <div class="guessLeft">
+        Guesses Left: {{guessLeft}}
+      </div>
 
-    <div class="guessed">
-      You Guessed: {{guessedArray}}
-    </div>
-    <div class="guessLeft">
-      Guesses Left: {{guessLeft}}
-    </div>
+    </main>
   </body>
 </html>
