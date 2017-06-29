@@ -80,14 +80,15 @@ app.post('/guess', function(req,res){
   } else {
       if (word.indexOf(guessChar)!==(-1)){
         if (word.indexOf(guessChar)!==(-1)){
-          tempPosition = word.indexOf(guessChar)
-          blankArray[tempPosition] = guessChar
-          // while (word.indexOf(guessChar,(tempPosition+1))!==(-1)){
-          //   tempPosition = word.indexOf(guessChar)
-          //   blankArray[tempPosition] = guessChar
-          // }
+          tempArray = word.split("");
+          for (i=0;i<tempArray.length;i++){
+            if (tempArray[i]===guessChar){
+              blankArray[i]=guessChar
+            }
+          }
         }
       }
+    }
 
     res.render("home", {
       pageTitle: "Home!",
@@ -96,5 +97,4 @@ app.post('/guess', function(req,res){
       blankArray: blankArray,
       word: word
     })
-}
 })
