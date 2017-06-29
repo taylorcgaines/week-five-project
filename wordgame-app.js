@@ -15,6 +15,7 @@ const word = getRandomWord(words);
 var guessLeft = 8;
 var guessedArray = [];
 var blankArray = [];
+var blank = "_ ";
 
 toBlanks(word)
 
@@ -30,7 +31,7 @@ function getRandomWord(array) {
 function toBlanks(chosenWord) {
   var charNum = chosenWord.length;
   for (i = 0; i < chosenWord.length; i++) {
-    blankArray.push("_ ");
+    blankArray.push(blank);
   }
 }
 
@@ -90,15 +91,15 @@ app.post('/guess', function(req, res) {
           }
         }
       }
-      if (word.indexOf("_ ") === -1){
-        res.redirect("/win")
+      if (blankArray.indexOf(blank) === -1) {
+        return res.redirect("/win")
       }
     } else {
       guessLeft--
-      if (guessLeft===0){
-        res.redirect("/lose")
+      if (guessLeft === 0) {
+        return res.redirect("/lose")
       }
     }
-    res.redirect("/")
+    return res.redirect("/")
   }
-})
+  })
