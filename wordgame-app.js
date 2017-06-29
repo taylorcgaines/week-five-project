@@ -14,36 +14,37 @@ const word = getRandomWord(words);
 
 var guessLeft = 8;
 var guessedArray = [];
-// var guessChar =
 var blankArray = [];
 
 toBlanks(word)
 
-app.listen(3000,function(){
+app.listen(3000, function() {
   console.log("here I go!")
 })
 console.log("Random Word: " + word);
 
-function getRandomWord(array){
+function getRandomWord(array) {
   return array[Math.floor(Math.random() * (words.length + 1))];
 }
 
-function toBlanks(chosenWord){
+function toBlanks(chosenWord) {
   var charNum = chosenWord.length;
-  for (i=0; i<chosenWord.length; i++){
-  blankArray.push("_ ");
+  for (i = 0; i < chosenWord.length; i++) {
+    blankArray.push("_ ");
   }
 }
 
-app.engine('mustache', mustache() )
+app.engine('mustache', mustache())
 app.set('view engine', 'mustache');
 
 app.use(express.static('public'))
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(expressValidator());
 
-app.get('/', function(req,res){
-  res.render("home",{
+app.get('/', function(req, res) {
+  res.render("home", {
     pageTitle: "Home!",
     guessLeft: guessLeft,
     guessedArray: guessedArray,
@@ -52,23 +53,25 @@ app.get('/', function(req,res){
   })
 })
 
-app.post('/guess', function(req,res){
-  // if ((blankArray.indexOf("_ "))!==(-1)){ //if there isn't a "_ " in the blanks
-  //   if (guessLeft > 0){
-  //
-  //   }
-  // }
+app.get('/win', function(req, res){
+  res.render("win")
+})
+
+app.get('/lose', function(req,res){
+  res.render("lose")
+})
+
+app.post('/guess', function(req, res) {
   const guessChar = req.body.guessChar;
-  guessedArray.push(guessChar+" ")
-  guessLeft--
+  guessedArray.push(guessChar + " ")
 
   req.checkBody("guessChar", "You didn't enter anything!").notEmpty();
   req.checkBody("guessChar", "You didn't enter a letter!").isAlpha();
-  req.checkBody("guessChar", "Try again! Either too few or too many!").len(1,1);
+  req.checkBody("guessChar", "Try again! Either too few or too many!").len(1, 1);
 
   var errors = req.validationErrors();
 
-  if (errors){
+  if (errors) {
     res.render('home', {
       pageTitle: "Home!",
       guessLeft: guessLeft,
@@ -78,23 +81,24 @@ app.post('/guess', function(req,res){
       errors: errors
     })
   } else {
-      if (word.indexOf(guessChar)!==(-1)){
-        if (word.indexOf(guessChar)!==(-1)){
-          tempArray = word.split("");
-          for (i=0;i<tempArray.length;i++){
-            if (tempArray[i]===guessChar){
-              blankArray[i]=guessChar
-            }
+    if (word.indexOf(guessChar) !== (-1)) {
+      if (word.indexOf(guessChar) !== (-1)) {
+        tempArray = word.split("");
+        for (i = 0; i < tempArray.length; i++) {
+          if (tempArray[i] === guessChar) {
+            blankArray[i] = guessChar
           }
         }
       }
+      if (word.indexOf("_ ") === -1){
+        res.redirect("/win")
+      }
+    } else {
+      guessLeft--
+      if (guessLeft===0){
+        res.redirect("/lose")
+      }
     }
-
-    res.render("home", {
-      pageTitle: "Home!",
-      guessLeft: guessLeft,
-      guessedArray: guessedArray,
-      blankArray: blankArray,
-      word: word
-    })
+    res.redirect("/")
+  }
 })
